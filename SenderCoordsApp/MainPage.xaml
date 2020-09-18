@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewModels="clr-namespace:SenderCoordsApp.ViewModel"
+             x:Class="SenderCoordsApp.MainPage">
+    <ContentPage.Resources>
+        <viewModels:MainPageViewModel x:Key="viewModel"/>
+    </ContentPage.Resources>
+
+    <StackLayout BindingContext="{StaticResource viewModel}">
+        <Label Text="{Binding Content}" Margin="10"/>
+        <Button Text="Click" Command="{Binding GetImei}"/>
+    </StackLayout>
+
+</ContentPage>
