@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SenderCoordsApp.Models {
     public class Coords {
-        public Guid coo_RecordID { get; set; }
-        public string coo_imei { get; set; }
-        public string coo_longitude { get; set; }
-        public string coo_latitude { get; set; }
+        public Guid CooRecordId { get; set; }
+        public string CooImei { get; set; }
+        public string CooLongitude { get; set; }
+        public string CooLatitude { get; set; }
     }
 }

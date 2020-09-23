@@ -23,10 +23,10 @@ namespace SenderCoordsApp.ViewModel {
             get => _GetImei ?? (_GetImei = new RelayCommand(async obj => {
             Content = DependencyService.Get<IDevice>().GetIdentifier();
                 Coords coords = new Coords() {
-                    coo_imei = DependencyService.Get<IDevice>().GetIdentifier(),
-                    coo_RecordID = Guid.NewGuid(),
-                    coo_latitude = "55.186391",
-                    coo_longitude = "61.334740"
+                    CooImei = DependencyService.Get<IDevice>().GetIdentifier(),
+                    CooRecordId = Guid.NewGuid(),
+                    CooLatitude = "55.186391",
+                    CooLongitude = "61.334740"
                 };
                 var json = JsonConvert.SerializeObject(coords);
                 var data = new StringContent(json, Encoding.ASCII, "application/json");
