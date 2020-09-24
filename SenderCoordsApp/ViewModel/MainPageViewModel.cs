@@ -1,5 +1,11 @@
-﻿using CoreLocation;
+﻿using Android;
+using Android.Content.PM;
+using Android.Support.Design.Widget;
+using Android.Support.V4.App;
+using CoreLocation;
 using Newtonsoft.Json;
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 using SenderCoordsApp.Helpers;
 using SenderCoordsApp.Models;
 using System;
@@ -8,6 +14,7 @@ using System.Net.Http;
 using System.Text;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Permission = Plugin.Permissions.Abstractions.Permission;
 
 namespace SenderCoordsApp.ViewModel {
     class MainPageViewModel : BaseViewModel {
@@ -73,6 +80,10 @@ namespace SenderCoordsApp.ViewModel {
         }
 
         private RelayCommand _Get;
+
+        public MainPageViewModel() {
+        }
+
         public RelayCommand Get {
             get => _Get ?? (_Get = new RelayCommand(async obj => {
                 using HttpClient client = new HttpClient();
