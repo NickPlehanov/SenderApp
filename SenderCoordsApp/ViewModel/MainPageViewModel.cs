@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using CoreLocation;
+using Newtonsoft.Json;
 using SenderCoordsApp.Helpers;
 using SenderCoordsApp.Models;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SenderCoordsApp.ViewModel {
@@ -18,32 +20,66 @@ namespace SenderCoordsApp.ViewModel {
             }
         }
 
-        private RelayCommand _GetImei;
-        public RelayCommand GetImei {
-            get => _GetImei ?? (_GetImei = new RelayCommand(async obj => {
-            Content = DependencyService.Get<IDevice>().GetIdentifier();
-                Coords coords = new Coords() {
-                    CooImei = DependencyService.Get<IDevice>().GetIdentifier(),
-                    CooRecordId = Guid.NewGuid(),
-                    CooLatitude = "55.186391",
-                    CooLongitude = "61.334740"
-                };
-                var json = JsonConvert.SerializeObject(coords);
-                var data = new StringContent(json, Encoding.ASCII, "application/json");
+        private string _Laltitude;
+        public string Latitude {
+            get => _Laltitude;
+            set {
+                _Laltitude = value;
+            }
+        }
 
-                HttpClient client = new HttpClient();
-                //HttpRequestMessage request = new HttpRequestMessage {
-                //    RequestUri = new Uri("http://193.138.130.98:7419/Coords/PostCoords?emei=" + DependencyService.Get<IDevice>().GetIdentifier()
-                //    + "&latitude=" + "55.186391" + "&longitude=" + "61.334740" + ""),
-                //    Method = HttpMethod.Post
-                //};
-            HttpResponseMessage response = await client.PostAsync("http://193.138.130.98:7419/api/Coords", data);
-                string result = response.Content.ReadAsStringAsync().Result;
-                //if (response.StatusCode == HttpStatusCode.OK) {
-                //    HttpContent responseContent = response.Content;
-                //    var res = await responseContent.ReadAsStringAsync();
-                //}
-            }));          
-}
+        private string _Longitude;
+        public string Longitude {
+            get => _Longitude;
+            set {
+                _Longitude = value;
+            }
+        }
+
+        private string GetImei() {
+            return DependencyService.Get<IDevice>().GetIdentifier();
+        }
+        private async System.Threading.Tasks.Task GetCoordsAsync() {
+            //using CLLocationManager locationManager = new CLLocationManager();
+            //locationManager.LocationsUpdated += async delegate (object sender, CLLocationsUpdatedEventArgs e) {
+            //    foreach (CLLocation l in e.Locations) {
+            //        Latitude = l.Coordinate.Latitude.ToString();
+            //        Longitude = l.Coordinate.Longitude.ToString();
+            //        //Console.WriteLine(l.Coordinate.Latitude.ToString() + ", " + l.Coordinate.Longitude.ToString());                   
+            //    }
+            //};
+            //locationManager.StartUpdatingLocation();
+
+            Location location = await Geolocation.GetLastKnownLocationAsync();
+            if (location != null) {
+                Latitude = location.Latitude.ToString();
+                Longitude = location.Longitude.ToString();
+            }
+        }
+
+        private RelayCommand _Post;
+        public RelayCommand Post {
+            get => _Post ?? (_Post = new RelayCommand(async obj => {
+                await GetCoordsAsync();
+                using HttpClient client = new HttpClient();
+                //TODO: На продакшен менять адрес !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                string baseAddress = "https://b21b1b60496c.ngrok.io/api/Coords";
+                //string baseAddress = "http://193.138.130.98:7419/api/Coords";
+                var data = JsonConvert.SerializeObject(new Coords() { CooImei = GetImei(), CooLatitude = Latitude, CooLongitude = Longitude, CooRecordId = Guid.NewGuid() });
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(baseAddress, content);
+                Content = $"JSON => {data}\n\n RESPONSE => {response.Content.ReadAsStringAsync().Result}";
+            }));
+        }
+
+        private RelayCommand _Get;
+        public RelayCommand Get {
+            get => _Get ?? (_Get = new RelayCommand(async obj => {
+                using HttpClient client = new HttpClient();
+                string baseAddress = "https://b21b1b60496c.ngrok.io/api/Coords";
+                HttpResponseMessage response = await client.GetAsync(baseAddress);
+                Content = $"RESPONSE => {response.Content.ReadAsStringAsync().Result}";
+            }));
+        }
     }
 }

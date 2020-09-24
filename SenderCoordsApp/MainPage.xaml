@@ -7,8 +7,10 @@
     </ContentPage.Resources>
 
     <StackLayout BindingContext="{StaticResource viewModel}">
-        <Label Text="{Binding Content}" Margin="10"/>
-        <Button Text="Click" Command="{Binding GetImei}"/>
+        <!--<Label Text="{Binding Content}" Margin="10"/>-->
+        <Button Text="Post" Command="{Binding Post}"/>
+        <Label Text="{Binding Content, Mode=TwoWay}" Margin="10,20"/>
+        <Button Text="Get" Command="{Binding Get}"/>
     </StackLayout>
 
 </ContentPage>
